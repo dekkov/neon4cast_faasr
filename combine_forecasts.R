@@ -13,6 +13,20 @@ combine_forecasts <- function(folder, input_oxygen, input_temperature, output_fi
   oxygen_fc <- read_csv("oxygen_fc.csv")
   temperature_fc <- read_csv("temperature_fc.csv")
   
+  # Convert both to character to ensure compatibility
+  oxygen_fc$parameter <- as.character(oxygen_fc$parameter)
+  temperature_fc$parameter <- as.character(temperature_fc$parameter)
+  
+  # For a more robust solution, ensure all common columns have the same type
+  common_cols <- intersect(names(oxygen_fc), names(temperature_fc))
+  for (col in common_cols) {
+    # Convert both to character if they're different types
+    if (!identical(class(oxygen_fc[[col]]), class(temperature_fc[[col]]))) {
+      oxygen_fc[[col]] <- as.character(oxygen_fc[[col]])
+      temperature_fc[[col]] <- as.character(temperature_fc[[col]])
+    }
+  }
+  
   # Combine the forecasts
   forecast <- bind_rows(oxygen_fc, temperature_fc)
   
