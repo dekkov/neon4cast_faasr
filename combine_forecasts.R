@@ -1,32 +1,35 @@
-create_temperature_forecast <- function(folder, input_file, output_file) {
-  # Create temperature forecast using random walk model
+combine_forecasts <- function(folder, input_oxygen, input_temperature, output_file) {
+  # Combine oxygen and temperature forecasts
   
   # Load required libraries
-  library(neon4cast)
   library(tidyverse)
-  library(fable)
-  library(tsibble)
+  library(glue)
   
-  # Download the blinded dataset
-  faasr_get_file(remote_folder = folder, remote_file = input_file, local_file = "blinded_aquatic.csv")
+  # Download the forecast files
+  faasr_get_file(remote_folder = folder, remote_file = input_oxygen, local_file = "oxygen_fc.csv")
+  faasr_get_file(remote_folder = folder, remote_file = input_temperature, local_file = "temperature_fc.csv")
   
-  # Read the dataset and convert to tsibble
-  blinded_aquatic <- read_csv("blinded_aquatic.csv") %>%
-    as_tsibble(index = datetime, key = site_id)
+  # Read the forecasts
+  oxygen_fc <- read_csv("oxygen_fc.csv")
+  temperature_fc <- read_csv("temperature_fc.csv")
   
-  # Create temperature forecast
-  temperature_fc <- blinded_aquatic %>%
-    model(benchmark_rw = RW(temperature)) %>%
-    forecast(h = "35 days") %>%
-    efi_format_ensemble()
+  # Combine the forecasts
+  forecast <- bind_rows(oxygen_fc, temperature_fc)
   
-  # Save the forecast
-  write_csv(temperature_fc, "temperature_fc.csv")
+  # Generate the output filename following EFI naming conventions
+  forecast_file <- "forecast_combined.csv"
+  write_csv(forecast, forecast_file)
   
-  # Upload the forecast to S3
-  faasr_put_file(local_file = "temperature_fc.csv", remote_folder = folder, remote_file = output_file)
+  # Create the properly named file for EFI submission
+  efi_filename <- glue::glue("aquatics-{date}-benchmark_rw.csv.gz",
+                             date = Sys.Date())
+  write_csv(forecast, efi_filename)
+  
+  # Upload both files to S3
+  faasr_put_file(local_file = forecast_file, remote_folder = folder, remote_file = output_file)
+  faasr_put_file(local_file = efi_filename, remote_folder = folder, remote_file = efi_filename)
   
   # Log message
-  log_msg <- paste0('Function create_temperature_forecast finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
+  log_msg <- paste0('Function combine_forecasts finished; outputs written to folder ', folder, ' in default S3 bucket')
   faasr_log(log_msg)
 }
