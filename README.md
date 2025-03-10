@@ -21,7 +21,7 @@ While you can use your existing GitHub PAT if you have one, it is recommended th
 
 
 
-## Part I: Running a neon4cast example manually
+# Part I: Running a neon4cast example manually
 
 In this part, we will download and process the target data for aquatics in order to create forecast for different variables from the target data.
 
@@ -93,7 +93,7 @@ write_csv(forecast, forecast_file)
 ```
 
 
-## Part II: Automate forecast using FaaSr
+# Part II: Automate forecast using FaaSr
 
 
 ### Clone the FaaSr tutorial repo
