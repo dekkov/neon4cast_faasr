@@ -95,6 +95,7 @@ write_csv(forecast, forecast_file)
 
 # Part II: Automate forecast using FaaSr
 
+This tutorial will help you get familiar with deploying FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow using the Mean method and register it in the JSON file.
 
 ### Clone the FaaSr tutorial repo
 
@@ -106,7 +107,7 @@ system('git clone https://github.com/dekkov/neon4cast_faasr.git')
 
 Click on FaaSr-Tutorial folder on the lower right window (Files), then
 
-Select More > Set as Working Directory from the drop down menu.
+Select More > Set as Working Directory from the drop-down menu.
 
 
 
@@ -134,6 +135,8 @@ Now set your GitHub token as a credential for use with Rstudio - paste your toke
 ```
 credentials::set_github_pat()
 ```
+
+### Download and process the target data for aquatics
 
 ### Configure the FaaSr secrets file with your GitHub token
 
