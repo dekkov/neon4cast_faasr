@@ -20,7 +20,7 @@ While you can use your existing GitHub PAT if you have one, it is recommended th
 * Copy and paste the token; you will need to save it to a file in your computer for use in the tutorial
 
 
-
+<!-- 
 # Part I: Running a neon4cast example manually
 
 In this part, we will download and process the target data for aquatics in order to create forecast for different variables from the target data.
@@ -91,7 +91,7 @@ forecast_file <- glue::glue("{theme}-{date}-{team}.csv.gz",
                             team = "benchmark_rw")
 write_csv(forecast, forecast_file)
 ```
-
+-->
 
 # Part II: Automate forecast using FaaSr
 
@@ -334,6 +334,55 @@ Now that we have the R function, we need to modify our FaaSr JSON workflow. Your
                 "input_temperature": "temperature_fc_mean.csv",
                 "output_file": "forecast_combined_mean.csv"
             }
+```
+
+### Set invoke function
+Add this inside your JSON object to set getData as the invoke funtion: `"FunctionInvoke": "getData",`
+
+### Add Package for each function
+
+```
+"FunctionGitHubPackage": {
+        "get_target_data": [
+            "tidyverts/tsibble",
+            "eco4cast/neon4cast"
+        ],
+        "create_oxygen_forecast": [
+            "tidyverts/tsibble",
+            "eco4cast/neon4cast"
+        ],
+        "create_temperature_forecast": [
+            "tidyverts/tsibble",
+            "eco4cast/neon4cast"
+        ],
+        "combine_forecasts": [
+            "tidyverts/tsibble",
+            "eco4cast/neon4cast"
+        ]
+        
+    },
+    "FunctionCRANPackage": {
+        "get_target_data": [
+            "tidyverse",
+            "fable"
+        ],
+        "create_oxygen_forecast": [
+            "neon4cast", 
+            "tidyverse",
+            "tsibble",
+            "fable"
+        ],
+        "create_temperature_forecast": [
+            "neon4cast",
+            "tidyverse",
+            "tsibble",
+            "fable"
+        ],
+        "combine_forecasts": [
+            "tidyverse",
+            "glue"
+        ]
+    },
 ```
 
 ## Register and invoke the simple workflow with GitHub Actions
