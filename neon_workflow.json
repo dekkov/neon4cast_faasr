@@ -25,37 +25,37 @@
                 "output_blinded": "blinded_aquatic.csv"
             },
             "InvokeNext": [
-                "oxygenForecast",
-                "temperatureForecast"
+                "oxygenForecastMean",
+                "temperatureForecastMean"
             ]
         },
-        "oxygenForecast": {
-            "FunctionName": "create_oxygen_forecast",
+        "oxygenForecastMean": {
+            "FunctionName": "create_oxygen_forecast_mean",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
                 "input_file": "blinded_aquatic.csv",
-                "output_file": "oxygen_fc.csv"
+                "output_file": "oxygen_fc_mean.csv"
             },
-            "InvokeNext": "combineForecast"
+            "InvokeNext": "combineForecastMean"
         },
-        "temperatureForecast": {
-            "FunctionName": "create_temperature_forecast",
+        "temperatureForecastMean": {
+            "FunctionName": "create_temperature_forecast_mean",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
                 "input_file": "blinded_aquatic.csv",
-                "output_file": "temperature_fc.csv"
+                "output_file": "temperature_fc_mean.csv"
             },
-            "InvokeNext": "combineForecast"
+            "InvokeNext": "combineForecastMean"
         },
-        "combineForecast": {
-            "FunctionName": "combine_forecasts",
+        "combineForecastMean": {
+            "FunctionName": "combine_forecasts_mean",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
-                "input_oxygen": "oxygen_fc.csv",
-                "input_temperature": "temperature_fc.csv",
+                "input_oxygen": "oxygen_fc_mean.csv",
+                "input_temperature": "temperature_fc_mean.csv",
                 "output_file": "forecast_combined.csv"
             }
         }
