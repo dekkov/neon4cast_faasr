@@ -143,7 +143,7 @@ The secrets file stores all credentials you use for FaaSr. You will notice that 
 
 ### Configure the FaaSr JSON simple workflow template with your GitHub username
 
-Open the file tutorial_simple.json and replace the string "YOUR_GITHUB_USERNAME" with your GitHub username, and save this file.
+Open the file neon_workflow.json and replace the string "YOUR_GITHUB_USERNAME" with your GitHub username, and save this file.
 
 The JSON file stores the configuration for your workflow. We'll come back to that later.
 
