@@ -25,38 +25,38 @@
                 "output_blinded": "blinded_aquatic.csv"
             },
             "InvokeNext": [
-                "oxygenForecastMean",
-                "temperatureForecastMean"
+                "oxygenForecastRandomWalk",
+                "temperatureForecastRandomWalk"
             ]
         },
-        "oxygenForecastMean": {
-            "FunctionName": "create_oxygen_forecast_mean",
+        "oxygenForecastRandomWalk": {
+            "FunctionName": "create_oxygen_forecast_rw",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
                 "input_file": "blinded_aquatic.csv",
-                "output_file": "oxygen_fc_mean.csv"
+                "output_file": "oxygen_fc_rw.csv"
             },
-            "InvokeNext": "combineForecastMean"
+            "InvokeNext": "combineForecastRandomWalk"
         },
-        "temperatureForecastMean": {
-            "FunctionName": "create_temperature_forecast_mean",
+        "temperatureForecastRandomWalk": {
+            "FunctionName": "create_temperature_forecast_rw",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
                 "input_file": "blinded_aquatic.csv",
-                "output_file": "temperature_fc_mean.csv"
+                "output_file": "temperature_fc_rw.csv"
             },
-            "InvokeNext": "combineForecastMean"
+            "InvokeNext": "combineForecastRandomWalk"
         },
-        "combineForecastMean": {
-            "FunctionName": "combine_forecasts_mean",
+        "combineForecastRandomWalk": {
+            "FunctionName": "combine_forecasts_rw",
             "FaaSServer": "My_GitHub_Account",
             "Arguments": {
                 "folder": "neon4cast",
-                "input_oxygen": "oxygen_fc_mean.csv",
-                "input_temperature": "temperature_fc_mean.csv",
-                "output_file": "forecast_combined.csv"
+                "input_oxygen": "oxygen_fc_rw.csv",
+                "input_temperature": "temperature_fc_rw.csv",
+                "output_file": "rw_forecast_combined.csv"
             }
         }
     },
@@ -67,10 +67,10 @@
         "combineForecast": "ghcr.io/faasr/github-actions-tidyverse:1.4.1"
     },
     "FunctionGitRepo": {
-        "get_target_data": "Ashish-Ramrakhiani/neon4cast_faasr",
-        "create_oxygen_forecast": "Ashish-Ramrakhiani/neon4cast_faasr",
-        "create_temperature_forecast": "Ashish-Ramrakhiani/neon4cast_faasr",
-        "combine_forecasts": "Ashish-Ramrakhiani/neon4cast_faasr"
+        "get_target_data": "dekkov/neon4cast_faasr",
+        "create_oxygen_forecast_rw": "dekkov/neon4cast_faasr",
+        "create_temperature_forecast_rw": "dekkov/neon4cast_faasr",
+        "combine_forecasts_rw": "dekkov/neon4cast_faasr"
     },
     "FunctionInvoke": "getData",
     "FaaSrLog": "FaaSrLog",
@@ -81,15 +81,15 @@
             "tidyverts/tsibble",
             "eco4cast/neon4cast"
         ],
-        "create_oxygen_forecast": [
+        "create_oxygen_forecast_rw": [
             "tidyverts/tsibble",
             "eco4cast/neon4cast"
         ],
-        "create_temperature_forecast": [
+        "create_temperature_forecast_rw": [
             "tidyverts/tsibble",
             "eco4cast/neon4cast"
         ],
-        "combine_forecasts": [
+        "combine_forecasts_rw": [
             "tidyverts/tsibble",
             "eco4cast/neon4cast"
         ]
@@ -100,28 +100,28 @@
             "tidyverse",
             "fable"
         ],
-        "create_oxygen_forecast": [
+        "create_oxygen_forecast_rw": [
             "neon4cast", 
             "tidyverse",
             "tsibble",
             "fable"
         ],
-        "create_temperature_forecast": [
+        "create_temperature_forecast_rw": [
             "neon4cast",
             "tidyverse",
             "tsibble",
             "fable"
         ],
-        "combine_forecasts": [
+        "combine_forecasts_rw": [
             "tidyverse",
             "glue"
         ]
     },
     "FunctionGitHubPackage": {
         "get_target_data": [],
-        "create_oxygen_forecast": [],
-        "create_temperature_forecast": [],
-        "combine_forecasts": []
+        "create_oxygen_forecast_rw": [],
+        "create_temperature_forecast_rw": [],
+        "combine_forecasts_rw": []
     }
 }
 
