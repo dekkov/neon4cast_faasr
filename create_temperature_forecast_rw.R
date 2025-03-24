@@ -1,4 +1,4 @@
-create_temperature_forecast <- function(folder, input_file, output_file) {
+create_temperature_forecast_rw <- function(folder, input_file, output_file) {
   # Create temperature forecast using random walk model
   
   # Load required libraries
@@ -15,18 +15,18 @@ create_temperature_forecast <- function(folder, input_file, output_file) {
     as_tsibble(index = datetime, key = site_id)
   
   # Create temperature forecast
-  temperature_fc <- blinded_aquatic %>%
+  temperature_fc_rw <- blinded_aquatic %>%
     model(benchmark_rw = RW(temperature)) %>%
     forecast(h = "35 days") %>%
     efi_format_ensemble()
   
   # Save the forecast
-  write_csv(temperature_fc, "temperature_fc.csv")
+  write_csv(temperature_fc_rw, "temperature_fc_rw.csv")
   
   # Upload the forecast to S3
-  faasr_put_file(local_file = "temperature_fc.csv", remote_folder = folder, remote_file = output_file)
+  faasr_put_file(local_file = "temperature_fc_rw.csv", remote_folder = folder, remote_file = output_file)
   
   # Log message
-  log_msg <- paste0('Function create_temperature_forecast finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
+  log_msg <- paste0('Function create_temperature_forecast_rw finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
   faasr_log(log_msg)
 }
