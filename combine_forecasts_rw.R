@@ -1,4 +1,4 @@
-combine_forecasts <- function(folder, input_oxygen, input_temperature, output_file) {
+combine_forecasts_mean <- function(folder, input_oxygen, input_temperature, output_file) {
   # Combine oxygen and temperature forecasts
   
   # Load required libraries
@@ -6,12 +6,12 @@ combine_forecasts <- function(folder, input_oxygen, input_temperature, output_fi
   library(glue)
   
   # Download the forecast files
-  faasr_get_file(remote_folder = folder, remote_file = input_oxygen, local_file = "oxygen_fc.csv")
-  faasr_get_file(remote_folder = folder, remote_file = input_temperature, local_file = "temperature_fc.csv")
+  faasr_get_file(remote_folder = folder, remote_file = input_oxygen, local_file = "oxygen_fc_rw.csv")
+  faasr_get_file(remote_folder = folder, remote_file = input_temperature, local_file = "temperature_fc_rw.csv")
   
   # Read the forecasts
-  oxygen_fc <- read_csv("oxygen_fc.csv")
-  temperature_fc <- read_csv("temperature_fc.csv")
+  oxygen_fc <- read_csv("oxygen_fc_rw.csv")
+  temperature_fc <- read_csv("temperature_fc_rw.csv")
   
   # Convert both to character to ensure compatibility
   oxygen_fc$parameter <- as.character(oxygen_fc$parameter)
@@ -31,7 +31,7 @@ combine_forecasts <- function(folder, input_oxygen, input_temperature, output_fi
   forecast <- bind_rows(oxygen_fc, temperature_fc)
   
   # Generate the output filename following EFI naming conventions
-  forecast_file <- "forecast_combined.csv"
+  forecast_file <- "mean_forecast_combined.csv"
   write_csv(forecast, forecast_file)
   
   # Create the properly named file for EFI submission
@@ -44,6 +44,6 @@ combine_forecasts <- function(folder, input_oxygen, input_temperature, output_fi
   faasr_put_file(local_file = efi_filename, remote_folder = folder, remote_file = efi_filename)
   
   # Log message
-  log_msg <- paste0('Function combine_forecasts finished; outputs written to folder ', folder, ' in default S3 bucket')
+  log_msg <- paste0('Function combine_forecasts_mean finished; outputs written to folder ', folder, ' in default S3 bucket')
   faasr_log(log_msg)
 }
