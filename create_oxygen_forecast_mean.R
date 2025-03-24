@@ -1,4 +1,4 @@
-create_oxygen_forecast <- function(folder, input_file, output_file) {
+create_oxygen_forecast_mean <- function(folder, input_file, output_file) {
   # Create oxygen forecast using random walk model
   
   # Load required libraries
@@ -15,7 +15,7 @@ create_oxygen_forecast <- function(folder, input_file, output_file) {
     as_tsibble(index = datetime, key = site_id)
   
   # Create oxygen forecast
-  oxygen_fc <- blinded_aquatic %>%
+  oxygen_fc_mean <- blinded_aquatic %>%
     model(benchmark_mean = MEAN(oxygen)) %>%
     forecast(h = "35 days") %>%
     efi_format()
@@ -27,6 +27,6 @@ create_oxygen_forecast <- function(folder, input_file, output_file) {
   faasr_put_file(local_file = "oxygen_fc_mean.csv", remote_folder = folder, remote_file = output_file)
   
   # Log message
-  log_msg <- paste0('Function create_oxygen_forecast finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
+  log_msg <- paste0('Function create_oxygen_forecast_mean finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
   faasr_log(log_msg)
 }
