@@ -156,6 +156,20 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 ![image](https://github.com/user-attachments/assets/da1f0143-9387-431c-b466-818ddd943d67)
 
 
+### Workflow Pipeline
+1. getData - Invoke function:
+- Download and process aquatic dataset and upload it to S3
+- This function will act as the starting point for our workflow, invoking both oxygenForecastMean and temperatureForecastMean next.
+2a. oxygenForecastMean:
+- Use the filtered dataset to create Oxygen forecast using Mean method and upload it to S3
+- Invoke combined forecast next.
+2b. temperatureForecastMean:
+- Use the filtered dataset to create Temperature forecast using Mean method and upload it to S3
+- Invoke combined forecast next.
+3. combineForecastMean:
+- Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
+- This function doesn't invoke any function after, meaning this is the end of our workflow.
+
 
 ## Register and invoke the simple workflow with GitHub Actions
 
@@ -185,30 +199,26 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Objectives
 
-This tutorial will help you get familiar with creating your own FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow as in part II using the Mean method and register it in the JSON file.
+This tutorial will help you get familiar with creating your own FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow as in part II but using the Mean method and register it in the JSON file.
 
 
 ## Configure the FaaSr JSON workflow
 
-Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. First, replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. This tutorial will guide you to deploy a workflow as below.
+Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. First, if you haven't set up part II, replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. Our goal for this tutorial is to create a workflow as below:
+
+![image](https://github.com/user-attachments/assets/808eb754-3bd1-4d8d-a7bd-9573a701f265)
 
 
-<img width="980" alt="image" src="https://github.com/user-attachments/assets/478be2af-2755-48d6-9714-4a269d6383a0" />
+
+## Add function to the workflow using JSON Builder App
 
 
-### Function Pipeline
-1. getData:
-- Download and process aquatic dataset and upload it to S3
-- This function will act as the starting point for our workflow, invoking both oxygenForecastMean and temperatureForecastMean next.
-2. oxygenForecastMean:
-- Use the filtered dataset to create Oxygen forecast using Mean method and upload it to S3
-- Invoke combined forecast next.
-3. temperatureForecastMean:
-- Use the filtered dataset to create Temperature forecast using Mean method and upload it to S3
-- Invoke combined forecast next.
-4. combineForecastMean:
-- Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
-- This function doesn't invoke any function after, meaning this is the end of our workflow.
+While you can create and edit FaaSr configuration files in any text editor, FaaSr also provides a Shiny app graphical user interface to facilitate the development of simple workflows using your browser. You can use it to edit a configuration from scratch, or from an existing JSON configuration file that you upload as a starting point, and then download the edited JSON file to your computer for use in FaaSr. [Right-click here to open the FaaSr workflow builder in another window](https://faasr.shinyapps.io/faasr-json-builder/). 
+
+
+
+
+
 
 ### Add function to the workflow JSON file
 After that, navigate to the FunctionList section, you will notice the getData function has been given to you. This function will put 2 files `aquatic_full.csv` and `aquatic_blinded.csv` onto S3. The `aquatic_blinded.csv` will be needed as we create functions for oxygenForecastMean and temperatureForecastMean. 
