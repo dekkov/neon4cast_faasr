@@ -20,7 +20,7 @@ While you can use your existing GitHub PAT if you have one, it is recommended th
 * Copy and paste the token; you will need to save it to a file in your computer for use in the tutorial
 
 
-<!-- 
+
 # Part I: Running a neon4cast example manually
 
 In this part, we will download and process the target data for aquatics in order to create forecast for different variables from the target data.
@@ -91,11 +91,12 @@ forecast_file <- glue::glue("{theme}-{date}-{team}.csv.gz",
                             team = "benchmark_rw")
 write_csv(forecast, forecast_file)
 ```
--->
 
-# Part II: Automate forecast using FaaSr
+# Part II: Deploy a simple FaaSr workflow.
 
-This tutorial will help you get familiar with deploying FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow using the Mean method and register it in the JSON file.
+## Objectives
+
+In this part, we will learn how to configure the working environment and deploy a simple FaasR workflow that is prebuilt for you.
 
 ## Clone the FaaSr tutorial repo
 
@@ -141,6 +142,19 @@ credentials::set_github_pat()
 Open the file named faasr_env in the editor. You need to enter your GitHub token here: replace the string "REPLACE_WITH_YOUR_GITHUB_TOKEN" with your GitHub token, and save this file. 
 
 The secrets file stores all credentials you use for FaaSr. You will notice that this file has the pre-populated credentials (secret key, access key) to access the Minio "play" bucket.
+
+## Configure the FaaSr JSON workflow
+
+Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. First, replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. This tutorial will guide you to deploy a workflow as below.
+
+
+
+# Part III: Build a FaaSr workflow by yourself.
+
+## Objectives
+
+This tutorial will help you get familiar with creating your own FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow as in part II using the Mean method and register it in the JSON file.
+
 
 ## Configure the FaaSr JSON workflow
 
