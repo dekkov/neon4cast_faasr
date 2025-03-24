@@ -151,7 +151,33 @@ The secrets file stores all credentials you use for FaaSr. You will notice that 
 
 ## Configure the FaaSr JSON workflow
 
-Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. First, replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. This tutorial will guide you to deploy a workflow as below.
+Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. Replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. A workflow has been configured for you, shown in the image attached below. For more information, please refer to [this schema](https://github.com/FaaSr/FaaSr-package/blob/main/schema/FaaSr.schema.json).
+
+![image](https://github.com/user-attachments/assets/da1f0143-9387-431c-b466-818ddd943d67)
+
+
+
+## Register and invoke the simple workflow with GitHub Actions
+
+Now you're ready for some Action! The steps below will:
+
+* Use the faasr function in the FaaSr library to load the neon_workflow.json and faasr_env in a list called neon4cast_tutorial
+* Use the register_workflow() function to create a repository called FaaSr-tutorial in GitHub, and configure the workflow there using GitHub Actions
+* Use the invoke_workflow() function to invoke the execution of your workflow
+
+Enter the following commands to your console:
+
+```
+neon4cast_tutorial<- faasr(json_path="neon_workflow.json", env="faasr_env")
+neon4cast_tutorial$register_workflow()
+```
+
+When prompted, select "public" to create a public repository. Now run the workflow:
+
+```
+neon4cast_tutorial$invoke_workflow()
+```
+
 
 
 
