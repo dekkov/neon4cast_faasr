@@ -1,4 +1,4 @@
-combine_forecasts_mean <- function(folder, input_oxygen, input_temperature, output_file) {
+combine_forecasts_rw <- function(folder, input_oxygen, input_temperature, output_file) {
   # Combine oxygen and temperature forecasts
   
   # Load required libraries
@@ -31,7 +31,7 @@ combine_forecasts_mean <- function(folder, input_oxygen, input_temperature, outp
   forecast <- bind_rows(oxygen_fc, temperature_fc)
   
   # Generate the output filename following EFI naming conventions
-  forecast_file <- "mean_forecast_combined.csv"
+  forecast_file <- "rw_forecast_combined.csv"
   write_csv(forecast, forecast_file)
   
   # Create the properly named file for EFI submission
@@ -44,6 +44,6 @@ combine_forecasts_mean <- function(folder, input_oxygen, input_temperature, outp
   faasr_put_file(local_file = efi_filename, remote_folder = folder, remote_file = efi_filename)
   
   # Log message
-  log_msg <- paste0('Function combine_forecasts_mean finished; outputs written to folder ', folder, ' in default S3 bucket')
+  log_msg <- paste0('Function combine_forecasts_rw finished; outputs written to folder ', folder, ' in default S3 bucket')
   faasr_log(log_msg)
 }
