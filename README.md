@@ -157,18 +157,18 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 
 
 ### Workflow Pipeline
-1. getData - Invoke function:
-- Download and process aquatic dataset and upload it to S3
-- This function will act as the starting point for our workflow, invoking both oxygenForecastMean and temperatureForecastMean next.
-2a. oxygenForecastMean:
-- Use the filtered dataset to create Oxygen forecast using Mean method and upload it to S3
-- Invoke combined forecast next.
-2b. temperatureForecastMean:
-- Use the filtered dataset to create Temperature forecast using Mean method and upload it to S3
-- Invoke combined forecast next.
-3. combineForecastMean:
-- Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
-- This function doesn't invoke any function after, meaning this is the end of our workflow.
++ 1. getData - Invoke function:
+ - Download and process aquatic dataset and upload it to S3
+ - This function will act as the starting point for our workflow, invoking both oxygenForecastRandomWalk and temperatureForecastRandomWalk next.
++ 2a. oxygenForecastRandomWalk:
+ - Use the filtered dataset to create Oxygen forecast using RandomWalk method and upload it to S3
+ - Invoke combined forecast next.
++ 2b. temperatureForecastRandomWalk:
+ - Use the filtered dataset to create Temperature forecast using RandomWalk method and upload it to S3
+ - Invoke combined forecast next.
++ 3. combineForecastRandomWalk:
+ - Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
+ - This function doesn't invoke any function after, meaning this is the end of our workflow.
 
 
 ## Register and invoke the simple workflow with GitHub Actions
