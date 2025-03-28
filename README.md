@@ -158,17 +158,18 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 
 ### Workflow Pipeline
 + 1. getData - Invoke function:
- - Download and process aquatic dataset and upload it to S3
- - This function will act as the starting point for our workflow, invoking both oxygenForecastRandomWalk and temperatureForecastRandomWalk next.
-+ 2a. oxygenForecastRandomWalk:
- - Use the filtered dataset to create Oxygen forecast using RandomWalk method and upload it to S3
- - Invoke combined forecast next.
-+ 2b. temperatureForecastRandomWalk:
- - Use the filtered dataset to create Temperature forecast using RandomWalk method and upload it to S3
- - Invoke combined forecast next.
+    - Download and process aquatic dataset and upload it to S3
+    - This function will act as the starting point for our workflow, invoking both oxygenForecastRandomWalk and temperatureForecastRandomWalk next.
++ 2.
+    * a. oxygenForecastRandomWalk:
+         - Use the filtered dataset to create Oxygen forecast using RandomWalk method and upload it to S3
+         - Invoke combined forecast next.
+    * b.temperatureForecastRandomWalk:
+         - Use the filtered dataset to create Temperature forecast using RandomWalk method and upload it to S3
+         - Invoke combined forecast next.
 + 3. combineForecastRandomWalk:
- - Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
- - This function doesn't invoke any function after, meaning this is the end of our workflow.
+    - Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
+    - This function doesn't invoke any function after, meaning this is the end of our workflow.
 
 
 ## Register and invoke the simple workflow with GitHub Actions
@@ -199,12 +200,12 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Objectives
 
-This tutorial will help you get familiar with creating your own FaaSr functions. You are provided a sample workflow in neon_workflow.json that creates a combined forecast using the Random Walk method. We will follow the same workflow as in part II but using the Mean method and register it in the JSON file.
+This tutorial will help you get familiar with creating your own FaaSr functions, which means that you will created a new FaaSr workflow by yourself. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part.
 
 
 ## Configure the FaaSr JSON workflow
 
-Head over to files tab and open `neon_workflow.json`. This is where we will decide the workflow for our project. First, if you haven't set up part II, replace YOUR_GITHUB_USERNAME with your actual github username in the username of ComputeServer section. Our goal for this tutorial is to create a workflow as below:
+The workflow we are aiming to create will have 2 addition functions compared to the one in previous part. Those are "oxygenForecastMean" and "temperatureForecastMean", which will create forecasts using "Mean" method (instead of "Random walk' as in part II)  on the two variables oxygen and temperature respectively. 
 
 ![image](https://github.com/user-attachments/assets/808eb754-3bd1-4d8d-a7bd-9573a701f265)
 
@@ -215,249 +216,28 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 
 While you can create and edit FaaSr configuration files in any text editor, FaaSr also provides a Shiny app graphical user interface to facilitate the development of simple workflows using your browser. You can use it to edit a configuration from scratch, or from an existing JSON configuration file that you upload as a starting point, and then download the edited JSON file to your computer for use in FaaSr. [Right-click here to open the FaaSr workflow builder in another window](https://faasr.shinyapps.io/faasr-json-builder/). 
 
+To start, you will need to download "neon_workflow.json" and upload it to the FaaSr JSON Builder, your Workflow section should represent the workflow we had in part II. Next, we will guide you through the process of adding the provided function `create_oxygen_forecast_mean.R` to this workflow.
 
-
-
-
-
-### Add function to the workflow JSON file
-After that, navigate to the FunctionList section, you will notice the getData function has been given to you. This function will put 2 files `aquatic_full.csv` and `aquatic_blinded.csv` onto S3. The `aquatic_blinded.csv` will be needed as we create functions for oxygenForecastMean and temperatureForecastMean. 
 
 ### oxygenForecastMean
-First, create an R script for to generate oxygen forecast. It will download `aquatic_blinded.csv` from S3 using the `faasr_get_file` function, generate a forecast file called `oxygen_fc_mean.csv`, and upload it back to S3 for use in the combined function with the help of `faasr_put_file`. Here’s the R script:
 
-```
-create_oxygen_forecast_mean <- function(folder, input_file, output_file) {
-  # Create oxygen forecast using random walk model
-  
-  # Load required libraries
-  library(neon4cast)
-  library(tidyverse)
-  library(fable)
-  library(tsibble)
-  
-  # Download the blinded dataset
-  faasr_get_file(remote_folder = folder, remote_file = input_file, local_file = "blinded_aquatic.csv")
-  
-  # Read the dataset and convert to tsibble
-  blinded_aquatic <- read_csv("blinded_aquatic.csv") %>%
-    as_tsibble(index = datetime, key = site_id)
-  
-  # Create oxygen forecast
-  oxygen_fc <- blinded_aquatic %>%
-    model(benchmark_mean = MEAN(oxygen)) %>%
-    forecast(h = "35 days") %>%
-    efi_format()
-  
-  # Save the forecast
-  write_csv(oxygen_fc, "oxygen_fc_mean.csv")
-  
-  # Upload the forecast to S3
-  faasr_put_file(local_file = "oxygen_fc_mean.csv", remote_folder = folder, remote_file = output_file)
-  
-  # Log message
-  log_msg <- paste0('Function create_oxygen_forecast finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
-  faasr_log(log_msg)
-}
-```
+Let's first create our function in the workflow:
 
-Now that we have the R function, let's modify the oxygenForecastMean function in neon_workflow.json. Replace "R_FUNCTION_NAME" with create_oxygen_forecast_mean. Next, we will need to add  "input_file": "blinded_aquatic.csv" and "output_file": "temperature_fc_mean.csv" to the "Argument" section. Finally, since we want to invoke combineForecastMean next, add "InvokeNext": "combineForecastMean". Your finalized JSON function should look like this:
-```
-"oxygenForecastMean": {
-            "FunctionName": "create_oxygen_forecast_mean",
-            "FaaSServer": "My_GitHub_Account",
-            "Arguments": {
-                "folder": "neon4cast",
-                "input_file": "blinded_aquatic.csv",
-                "output_file": "oxygen_fc_mean.csv"
-            },
-            "InvokeNext": "combineForecastMean"
-        },
-```
+1. On the left sidebar, choose `Functions` for "Select type" field.
+2. For "Action Name" and "Function Name", input the following: `oxygenForecastMean` and `create_oxygen_forecast_mean`. Notice: the function name declare here should match with the function name initialized in `create_oxygen_forecast_mean.R`.
+3. For "Function Arguments", we need to match this field with the actual arguments in our file, which is `folder=neon4cast, input_file=blinded_aquatic.csv, output_file=oxygen_fc_mean.csv`
+4. Since we won't invoke anything after this function, we can leave "Next Actions to Invoke" blank.
+5. For "Function's Action Container(Optional)", input `ghcr.io/faasr/github-actions-tidyverse:1.4.1`
+6. For "Repository/Path": input `dekkov/neon4cast_faasr`
+7. The dependencies need for this function should also be declare in the next 2 fields as follow: "Dependencies - Github Package for the function: tidyverts/tsibble, eco4cast/neon4cast", "Dependencies - Repository/Path for the function: neon4cast, tidyverse, tsibble, fable".
+8. Click Apply
+
+Now that we have our function, we can connect it to our workflow by invoking it after getData function.
+
+1. Click on getData function in the workflow section.
+2. In "Next Actions to Invoke" section, add `oxygenForecastMean` to the list.
+3. Click apply
+
+You should see an arrow from getData function to oxygenForecastMean, which indicates we have successfully linked the 2 functions.
 
 ### temperatureForecastMean
-
-The process for temperatureForecastMean should be similar to oxygenForecastMean. Your final R script and JSON function should be as below:
-
-create_temperature_forecast_mean.R
-```
-create_temperature_forecast_mean <- function(folder, input_file, output_file) {
-  # Create temperature forecast using random walk model
-  
-  # Load required libraries
-  library(neon4cast)
-  library(tidyverse)
-  library(fable)
-  library(tsibble)
-  
-  # Download the blinded dataset
-  faasr_get_file(remote_folder = folder, remote_file = input_file, local_file = "blinded_aquatic.csv")
-  
-  # Read the dataset and convert to tsibble
-  blinded_aquatic <- read_csv("blinded_aquatic.csv") %>%
-    as_tsibble(index = datetime, key = site_id)
-  
-  # Create temperature forecast
-  temperature_fc <- blinded_aquatic %>%
-    model(benchmark_mean = MEAN(temperature)) %>%
-    forecast(h = "35 days") %>%
-    efi_format_ensemble()
-  
-  # Save the forecast
-  write_csv(temperature_fc, "temperature_fc_mean.csv")
-  
-  # Upload the forecast to S3
-  faasr_put_file(local_file = "temperature_fc_mean.csv", remote_folder = folder, remote_file = output_file)
-  
-  # Log message
-  log_msg <- paste0('Function create_temperature_forecast finished; output written to ', folder, '/', output_file, ' in default S3 bucket')
-  faasr_log(log_msg)
-}
-```
-
-JSON function
-```
-"temperatureForecastMean": {
-            "FunctionName": "create_temperature_forecast_mean",
-            "FaaSServer": "My_GitHub_Account",
-            "Arguments": {
-                "folder": "neon4cast",
-                "input_file": "blinded_aquatic.csv",
-                "output_file": "temperature_fc_mean.csv"
-            },
-            "InvokeNext": "combineForecastMean"
-        },
-```
-
-### combineForecastMean
-Create an R script for a function that combine the 2 forecasted datasets. It will download `oxygen_fc_mean.csv` and `temperature_fc_mean` from S3 using the `faasr_get_file` function, generate a combined forecast file called `forecast_combined_mean.csv`, and upload it back to S3 for use in the combined function with the help of `faasr_put_file`. Here’s the R script:
-
-```
-combine_forecasts_mean <- function(folder, input_oxygen, input_temperature, output_file) {
-  # Combine oxygen and temperature forecasts
-  
-  # Load required libraries
-  library(tidyverse)
-  library(glue)
-  
-  # Download the forecast files
-  faasr_get_file(remote_folder = folder, remote_file = input_oxygen, local_file = "oxygen_fc_mean.csv")
-  faasr_get_file(remote_folder = folder, remote_file = input_temperature, local_file = "temperature_fc_mean.csv")
-  
-  # Read the forecasts
-  oxygen_fc <- read_csv("oxygen_fc_mean.csv")
-  temperature_fc <- read_csv("temperature_fc_mean.csv")
-  
-  # Convert both to character to ensure compatibility
-  oxygen_fc$parameter <- as.character(oxygen_fc$parameter)
-  temperature_fc$parameter <- as.character(temperature_fc$parameter)
-  
-  # For a more robust solution, ensure all common columns have the same type
-  common_cols <- intersect(names(oxygen_fc), names(temperature_fc))
-  for (col in common_cols) {
-    # Convert both to character if they're different types
-    if (!identical(class(oxygen_fc[[col]]), class(temperature_fc[[col]]))) {
-      oxygen_fc[[col]] <- as.character(oxygen_fc[[col]])
-      temperature_fc[[col]] <- as.character(temperature_fc[[col]])
-    }
-  }
-  
-  # Combine the forecasts
-  forecast <- bind_rows(oxygen_fc, temperature_fc)
-  
-  # Generate the output file
-  forecast_file <- "forecast_combined_mean.csv"
-  write_csv(forecast, forecast_file)
-  
-  # Upload both files to S3
-  faasr_put_file(local_file = forecast_file, remote_folder = folder, remote_file = output_file)
-  
-  # Log message
-  log_msg <- paste0('Function combine_forecasts finished; outputs written to folder ', folder, ' in default S3 bucket')
-  faasr_log(log_msg)
-}
-```
-
-Now that we have the R function, we need to modify our FaaSr JSON workflow. Your output should look similar to this:
-
-```
-"combineForecastMean": {
-            "FunctionName": "combine_forecasts_mean",
-            "FaaSServer": "My_GitHub_Account",
-            "Arguments": {
-                "folder": "neon4cast",
-                "input_oxygen": "oxygen_fc_mean.csv",
-                "input_temperature": "temperature_fc_mean.csv",
-                "output_file": "forecast_combined_mean.csv"
-            }
-```
-
-### Set invoke function
-Add this inside your JSON object to set getData as the invoke funtion: `"FunctionInvoke": "getData",`
-
-### Add Package for each function
-
-```
-"FunctionGitHubPackage": {
-        "get_target_data": [
-            "tidyverts/tsibble",
-            "eco4cast/neon4cast"
-        ],
-        "create_oxygen_forecast": [
-            "tidyverts/tsibble",
-            "eco4cast/neon4cast"
-        ],
-        "create_temperature_forecast": [
-            "tidyverts/tsibble",
-            "eco4cast/neon4cast"
-        ],
-        "combine_forecasts": [
-            "tidyverts/tsibble",
-            "eco4cast/neon4cast"
-        ]
-        
-    },
-    "FunctionCRANPackage": {
-        "get_target_data": [
-            "tidyverse",
-            "fable"
-        ],
-        "create_oxygen_forecast": [
-            "neon4cast", 
-            "tidyverse",
-            "tsibble",
-            "fable"
-        ],
-        "create_temperature_forecast": [
-            "neon4cast",
-            "tidyverse",
-            "tsibble",
-            "fable"
-        ],
-        "combine_forecasts": [
-            "tidyverse",
-            "glue"
-        ]
-    },
-```
-
-## Register and invoke the simple workflow with GitHub Actions
-
-Now you're ready for some Action! The steps below will:
-
-* Use the faasr function in the FaaSr library to load the neon_workflow.json and faasr_env in a list called neon4cast_tutorial
-* Use the register_workflow() function to create a repository called FaaSr-tutorial in GitHub, and configure the workflow there using GitHub Actions
-* Use the invoke_workflow() function to invoke the execution of your workflow
-
-Enter the following commands to your console:
-
-```
-neon4cast_tutorial<- faasr(json_path="neon_workflow.json", env="faasr_env")
-neon4cast_tutorial$register_workflow()
-```
-
-When prompted, select "public" to create a public repository. Now run the workflow:
-
-```
-neon4cast_tutorial$invoke_workflow()
-```
