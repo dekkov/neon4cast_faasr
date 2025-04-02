@@ -200,7 +200,8 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Objectives
 
-This tutorial will help you get familiar with creating your own FaaSr functions, which means that you will created a new FaaSr workflow by yourself. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part.
+This tutorial will help you get familiar with creating your own FaaSr functions, which means that you will created a new FaaSr workflow by yourself. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part. The function is similar to the previous two we have seen, but with a modification of the method when creating a forecast. See [file](https://github.com/dekkov/neon4cast_faasr/blob/main/create_oxygen_forecast_mean.R). 
+
 
 
 ## Configure the FaaSr JSON workflow
@@ -216,20 +217,19 @@ The workflow we are aiming to create will have 2 addition functions compared to 
 
 While you can create and edit FaaSr configuration files in any text editor, FaaSr also provides a Shiny app graphical user interface to facilitate the development of simple workflows using your browser. You can use it to edit a configuration from scratch, or from an existing JSON configuration file that you upload as a starting point, and then download the edited JSON file to your computer for use in FaaSr. [Right-click here to open the FaaSr workflow builder in another window](https://faasr.shinyapps.io/faasr-json-builder/). 
 
-To start, you will need to download "neon_workflow.json" and upload it to the FaaSr JSON Builder, your Workflow section should represent the workflow we had in part II. Next, we will guide you through the process of adding the provided function `create_oxygen_forecast_mean.R` to this workflow.
-
+To start, you will need to download "neon_workflow.json" and upload it to the FaaSr JSON Builder, your Workflow section should represent the workflow we had in part II. Next, we will guide you through the process of adding the provided function `create_oxygen_forecast_mean.R` to this workflow. 
 
 ### oxygenForecastMean
 
 Let's first create our function in the workflow:
 
 1. On the left sidebar, choose `Functions` for "Select type" field.
-2. For "Action Name" and "Function Name", input the following: `oxygenForecastMean` and `create_oxygen_forecast_mean`. Notice: the function name declare here should match with the function name initialized in `create_oxygen_forecast_mean.R`.
+2. For "Action Name" and "Function Name", input the following: `oxygenForecastMean` and `create_oxygen_forecast_mean`. Notice: the function name declared here should match the function name initialized in `create_oxygen_forecast_mean.R`.
 3. For "Function Arguments", we need to match this field with the actual arguments in our file, which is `folder=neon4cast, input_file=blinded_aquatic.csv, output_file=oxygen_fc_mean.csv`
 4. Since we won't invoke anything after this function, we can leave "Next Actions to Invoke" blank.
 5. For "Function's Action Container(Optional)", input `ghcr.io/faasr/github-actions-tidyverse:1.4.1`
 6. For "Repository/Path": input `dekkov/neon4cast_faasr`
-7. The dependencies need for this function should also be declare in the next 2 fields as follow: "Dependencies - Github Package for the function: tidyverts/tsibble, eco4cast/neon4cast", "Dependencies - Repository/Path for the function: neon4cast, tidyverse, tsibble, fable".
+7. The dependencies needed for this function should also be declared in the next 2 fields as follows: "Dependencies - Github Package for the function: tidyverts/tsibble, eco4cast/neon4cast", "Dependencies - Repository/Path for the function: neon4cast, tidyverse, tsibble, fable".
 8. Click Apply
 
 Now that we have our function, we can connect it to our workflow by invoking it after getData function.
@@ -241,3 +241,24 @@ Now that we have our function, we can connect it to our workflow by invoking it 
 You should see an arrow from getData function to oxygenForecastMean, which indicates we have successfully linked the 2 functions.
 
 ### temperatureForecastMean
+
+Now, try to follow the instructions below to create your own function and register it.
+
+1. Create a function for forecasting temperature with the new method.
+   a. Create an R script and paste the code from `create_temperature_forecast_rw.R`. Then, replace model(benchmark_rw = RW(temperature)) with `model(benchmark_rw = MEAN(temperature))`.
+   b. Modify variables, function names, and file names.
+   c. Save the file and push it to your repository.
+3. Register the newly created function in the workflow through FaaSr JSON builder.
+   a. Head over to the shiny app and select the "Functions" tab.
+   b. Fill in the fields:
+      - **Action name**: The name that represents your function on the workflow.
+      - **Function name**: This field should match the name of the function you just created in step 1.
+      - **Function FaaS Server**: Keep as default for this tutorial.
+      - **Function arguments**: The arguments needed for your function.
+      - **Next Actions to Invoke**: Since we won't invoke any other function now, keep it blank.
+      - **Repository/Path**: Where your function file is located, which should be "your_github_username/your_repo_name"
+      - **Dependencies-Github Package**: The packages needed for your function
+      - **Dependencies-Repository/Path**:
+   c. Click "Apply" to add the function to the workflow.
+   d. In getData's "Next Actions to Invoke", add the action name and click apply to save.
+
