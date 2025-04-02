@@ -176,7 +176,7 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 Now you're ready for some Action! The steps below will:
 
 * Use the faasr function in the FaaSr library to load the neon_workflow.json and faasr_env in a list called neon4cast_tutorial
-* Use the register_workflow() function to create a repository called FaaSr-tutorial in GitHub, and configure the workflow there using GitHub Actions
+* Use the register_workflow() function to create a repository called neon4cast_faasr_actions in GitHub, and configure the workflow there using GitHub Actions
 * Use the invoke_workflow() function to invoke the execution of your workflow
 
 Enter the following commands to your console:
@@ -194,7 +194,7 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Check if action is successful
 
-Head over to the github repo just created by FaaSr, go to actions page to see if your actions has successfully run. 
+Head over to the github repo `neon4cast_faasr_actions` just created by FaaSr, go to actions page to see if your actions has successfully run. 
 If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
 ```
 Username: Q3AM3UQ867SPQQA43P2F
@@ -287,7 +287,7 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Check if action is successful
 
-Head over to the github repo just created by FaaSr, go to actions page to see if your actions has successfully run. 
+Head over to the github repo `neon4cast_faasr_actions` just created by FaaSr, go to actions page to see if your actions has successfully run. 
 If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
 ```
 Username: Q3AM3UQ867SPQQA43P2F
