@@ -33,7 +33,9 @@ In this part, we will download and process the target data for aquatics in order
 
 ### Install the development version of neon4cast
 ```
-# install.packages("remotes")
+install.packages("tidyverse")
+install.packages("fable")
+install.packages("remotes")
 remotes::install_github("eco4cast/neon4cast")
 ```
 ###  Load required libraries
@@ -127,7 +129,7 @@ Run one of the following commands, depending on your setup (Posit, or local Dock
 ```
 source('posit_setup_script')
 ```
-
+This process can take a few minutes!
 
 ## Configure Rstudio to use GitHub Token
 
