@@ -259,7 +259,9 @@ Now, try to follow the instructions below to create your own function and regist
    b. Modify variables, function names, and file names.
    c. Save the file and push it to your repository.
 2. Register the newly created function in the workflow through FaaSr JSON builder.
+   
    a. Head over to the shiny app and select the "Functions" tab.
+   
    b. Fill in the fields:
       - **Action name**: The name that represents your function on the workflow.
       - **Function name**: This field should match the name of the function you just created in step 1.
@@ -267,8 +269,9 @@ Now, try to follow the instructions below to create your own function and regist
       - **Function arguments**: The arguments needed for your function.
       - **Next Actions to Invoke**: Since we won't invoke any other function now, keep it blank.
       - **Repository/Path**: Where your function file is located, which should be "your_github_username/your_repo_name"
-      - **Dependencies-Github Package**: The packages needed for your function
-      - **Dependencies-Repository/Path**:
+      - **Dependencies-Github Package**: "WONDERING!"
+      - **Dependencies-Repository/Path**: "WONDERING!"
+        
    c. Click "Apply" to add the function to the workflow.
    d. In getData's "Next Actions to Invoke", add the action name and click apply to save.
 3. Download the JSON file and use it in your directory.
