@@ -248,7 +248,7 @@ Now, try to follow the instructions below to create your own function and regist
    a. Create an R script and paste the code from `create_temperature_forecast_rw.R`. Then, replace model(benchmark_rw = RW(temperature)) with `model(benchmark_rw = MEAN(temperature))`.
    b. Modify variables, function names, and file names.
    c. Save the file and push it to your repository.
-3. Register the newly created function in the workflow through FaaSr JSON builder.
+2. Register the newly created function in the workflow through FaaSr JSON builder.
    a. Head over to the shiny app and select the "Functions" tab.
    b. Fill in the fields:
       - **Action name**: The name that represents your function on the workflow.
@@ -261,4 +261,23 @@ Now, try to follow the instructions below to create your own function and regist
       - **Dependencies-Repository/Path**:
    c. Click "Apply" to add the function to the workflow.
    d. In getData's "Next Actions to Invoke", add the action name and click apply to save.
+3. Download the JSON file and use it in your directory.
+4. Enter the following commands to your console (remember to replace "your_workflow_name" with your actual file name):
+
+```
+neon4cast_tutorial<- faasr(json_path="your_workflow_name.json", env="faasr_env")
+neon4cast_tutorial$register_workflow()
+```
+
+When prompted, select "public" to create a public repository. Now run the workflow:
+
+```
+neon4cast_tutorial$invoke_workflow()
+```
+
+## Check if action is successful
+
+Head over to the github repo just created by FaaSr, go to actions page to see if your actions has successfully run. 
+
+##
 
