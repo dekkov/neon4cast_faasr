@@ -312,6 +312,11 @@ Now that you've built individual forecast functions using the mean method, your 
    - Deploy using the same FaaSr commands as before.
 4. Check Github Actions to confirm successful execution.
 
+Here is the JSON snippet:
+
+![image](https://github.com/user-attachments/assets/9639d723-9948-45ec-8100-5ab249e2df08)
+
+
 Good luck, and have fun building your forecasting pipeline!
 
 
