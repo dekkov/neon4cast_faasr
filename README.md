@@ -6,7 +6,7 @@ In this tutorial, we will run a [neon4cast package](https://github.com/eco4cast/
 ## Prerequisites
 - A Github account
 - A Github personal access token (PAT)
-- Rstudio on either a [Posit cloud account](https://posit.cloud/) (which you can login with GitHub), or [Docker installed in your computer](https://docs.docker.com/get-started/) (You can also use your own Rstudio; however, the Posit cloud and Rocker approaches are recommended for reproducibility),
+- RStudio on Posit Cloud (recommended) or a local Docker-based installation. 
 - a Minio S3 bucket (you can use the [Play Console](https://min.io/docs/minio/linux/administration/minio-console.html#minio-console) to use a public/unauthenticated server)
 
 
@@ -110,9 +110,7 @@ First let's clone the FaaSr tutorial repo - copy and paste this command in the t
 system('git clone https://github.com/dekkov/neon4cast_faasr.git')
 ```
 
-Click on FaaSr-Tutorial folder on the lower right window (Files), then
-
-Select More > Set as Working Directory from the drop-down menu.
+In RStudio, navigate to the neon4cast_faasr folder, then set it as the working directory (More > Set as Working Directory).
 
 
 
@@ -297,5 +295,23 @@ Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 ```
 
 Look for the neon4cast folder in faasr bucket, you should be able to see the forecasts you have just created.
+
+
+# Part IV: Challenge - Create a Combine Function for the Mean Method
+
+Now that you've built individual forecast functions using the mean method, your challenge is to create a new function to combine these forecasts.
+
+**Steps to Complete the Challenge**
+1. Create a new R script for combining the forecasts, similar to how forecasts were combined in Part I.
+2. Modify your FaaSr workflow to include this new function:
+   - Name it `combineForecastMean`.
+   - Modify your function to merge the mean method forecast files into a single dataset.
+3. Register and deploy your updated workflow
+   - Add `combineForecastMean` to you JSON workflow.
+   - Connect it to `oxygenForecastMean` and `temperatureForecastMean`.
+   - Deploy using the same FaaSr commands as before.
+4. Check Github Actions to confirm successful execution.
+
+Good luck, and have fun building your forecasting pipeline!
 
 
