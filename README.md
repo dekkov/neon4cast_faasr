@@ -9,11 +9,6 @@ In this tutorial, we will run a [neon4cast package](https://github.com/eco4cast/
 - Rstudio on either a [Posit cloud account](https://posit.cloud/) (which you can login with GitHub), or [Docker installed in your computer](https://docs.docker.com/get-started/) (You can also use your own Rstudio; however, the Posit cloud and Rocker approaches are recommended for reproducibility),
 - a Minio S3 bucket (you can use the [Play Console](https://min.io/docs/minio/linux/administration/minio-console.html#minio-console) to use a public/unauthenticated server)
 
-* You can explore the Console using https://play.min.io:9443. Log in with the following credentials:
-```
-Username: Q3AM3UQ867SPQQA43P2F
-Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
-```
 
 While you can use your existing GitHub PAT if you have one, it is recommended that you create a short-lived GitHub PAT token for this tutorial if you plan to use Posit Cloud. [Detailed instructions to create a PAT are available here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic); in summary:
 
@@ -35,6 +30,7 @@ In this part, we will download and process the target data for aquatics in order
 ```
 install.packages("tidyverse")
 install.packages("fable")
+install.packages("tsibble")
 install.packages("remotes")
 remotes::install_github("eco4cast/neon4cast")
 ```
@@ -159,19 +155,22 @@ Head over to files tab and open `neon_workflow.json`. This is where we will deci
 
 
 ### Workflow Pipeline
-+ 1. getData - Invoke function:
+1. getData - Invoke function:
     - Download and process aquatic dataset and upload it to S3
     - This function will act as the starting point for our workflow, invoking both oxygenForecastRandomWalk and temperatureForecastRandomWalk next.
-+ 2.
-    * a. oxygenForecastRandomWalk:
-         - Use the filtered dataset to create Oxygen forecast using RandomWalk method and upload it to S3
-         - Invoke combined forecast next.
-    * b.temperatureForecastRandomWalk:
-         - Use the filtered dataset to create Temperature forecast using RandomWalk method and upload it to S3
-         - Invoke combined forecast next.
-+ 3. combineForecastRandomWalk:
+2. The following two functions will run simultaneously:
+
+   a. oxygenForecastRandomWalk
+     - Use the filtered dataset to create Oxygen forecast using RandomWalk method and upload it to S3
+     - Invoke combined forecast next.
+       
+    b.temperatureForecastRandomWalk
+     - Use the filtered dataset to create Temperature forecast using RandomWalk method and upload it to S3
+     - Invoke combined forecast next.
+ 3. combineForecastRandomWalk:
     - Download the 2 forecasts file from S3 to generate a combined forecast and store it in S3
     - This function doesn't invoke any function after, meaning this is the end of our workflow.
+
 
 
 ## Register and invoke the simple workflow with GitHub Actions
@@ -194,6 +193,17 @@ When prompted, select "public" to create a public repository. Now run the workfl
 ```
 neon4cast_tutorial$invoke_workflow()
 ```
+
+## Check if action is successful
+
+Head over to the github repo just created by FaaSr, go to actions page to see if your actions has successfully run. 
+If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
+```
+Username: Q3AM3UQ867SPQQA43P2F
+Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+```
+
+Look for the neon4cast folder in faasr bucket, you should be able to see the forecasts you have just created.
 
 
 
@@ -280,6 +290,12 @@ neon4cast_tutorial$invoke_workflow()
 ## Check if action is successful
 
 Head over to the github repo just created by FaaSr, go to actions page to see if your actions has successfully run. 
+If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
+```
+Username: Q3AM3UQ867SPQQA43P2F
+Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+```
 
-##
+Look for the neon4cast folder in faasr bucket, you should be able to see the forecasts you have just created.
+
 
