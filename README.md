@@ -24,79 +24,11 @@ While you can use your existing GitHub PAT if you have one, it is recommended th
 
 # Part I: Running a neon4cast example manually
 
-In this part, we will download and process the target data for aquatics in order to create forecast for different variables from the target data.
-
-### Install the development version of neon4cast
-```
-install.packages("tidyverse")
-install.packages("fable")
-install.packages("tsibble")
-install.packages("remotes")
-remotes::install_github("eco4cast/neon4cast")
-```
-###  Load required libraries
-
-```
-library(neon4cast)
-library(tidyverse)
-library(fable)
-library(tsibble)
-```
-
-### Download and process the target data for aquatics
-
-```
- # Download target data
-  target <- read_csv("https://data.ecoforecast.org/neon4cast-targets/aquatics/aquatics-targets.csv.gz")
-  
-  # Process data
-  aquatic <- target %>% 
-    pivot_wider(names_from = "variable", values_from = "observation") %>%
-    as_tsibble(index = datetime, key = site_id)
-  
-  # Save the full dataset
-  write_csv(aquatic %>% as_tibble(), "aquatic_full.csv")
-  
-  # Create blinded dataset (drop last 35 days)
-  blinded_aquatic <- aquatic %>%
-    filter(datetime < max(datetime) - 35) %>% 
-    fill_gaps()
-```
-
-
-### Create forecasts
-
-```
-# A simple random walk forecast, see ?fable::RW
-oxygen_fc <- blinded_aquatic %>%
-  model(benchmark_rw = RW(oxygen)) %>%
-  forecast(h = "35 days") %>%
-  efi_format()
-
-## also use random walk for temperature
-temperature_fc <- blinded_aquatic  %>% 
-  model(benchmark_rw = RW(temperature)) %>%
-  forecast(h = "35 days") %>%
-  efi_format_ensemble()
-
-
-```
-
-### Combine forecasts and export file to local
-
-```
-# stack into single table
-forecast <- bind_rows(oxygen_fc, temperature_fc) 
-
-## Write the forecast to a file following EFI naming conventions:
-forecast_file <- glue::glue("{theme}-{date}-{team}.csv.gz",
-                            theme = "aquatics", 
-                            date=Sys.Date(),
-                            team = "benchmark_rw")
-write_csv(forecast, forecast_file)
-```
+**This tutorial is based on the neon4cast example in [this repo](https://github.com/eco4cast/neon4cast/tree/main). If you would like to first execute this example locally in your Rstudio session, follow the instructions in the appendix. Otherwise, continue to Part II to run it using FaaSr.**
 
 # Part II: Deploy a simple FaaSr workflow.
+
+**This tutorial assumes that you has finished the [basic tutorial](https://github.com/FaaSr/FaaSr-tutorial). If you have not already done so, we strongly suggest completing it first before continuing.**
 
 ## Objectives
 
@@ -194,6 +126,8 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Check if action is successful
 
+
+
 Head over to the github repo `neon4cast_faasr_actions` just created by FaaSr, go to actions page to see if your actions has successfully run. 
 If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
 ```
@@ -201,25 +135,35 @@ Username: Q3AM3UQ867SPQQA43P2F
 Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
 ```
 
-Look for the neon4cast folder in faasr bucket, you should be able to see the forecasts you have just created.
+In your faasr bucket, there are two folders called FaaSrLog and neon4cast. In FaaSrLogYou can find logging and status for each function in the workflow. In neon4cast folder, files that are created during the workflow are stored here.  
 
+Another way to check if our workflow has run successfully is using mc_ls command by FaaSr to list files in either of the above folders:
 
-
+```
+mc_ls("play/faasr/neon4cast")
+```
+After that, you can retrieve the files listed into your working environment using mc_cat command in the console:
+```
+mc_cat("play/faasr/neon4cast/aquatic_full.csv")
+mc_cat("play/faasr/neon4cast/blinded_aquatic.csv")
+mc_cat("play/faasr/neon4cast/rw_forecast_combined.csv")
+```
 
 # Part III: Build a FaaSr workflow by yourself.
 
 ## Objectives
 
-This tutorial will help you get familiar with creating your own FaaSr functions, which means that you will created a new FaaSr workflow by yourself. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part. The function is similar to the previous two we have seen, but with a modification of the method when creating a forecast. See [file](https://github.com/dekkov/neon4cast_faasr/blob/main/create_oxygen_forecast_mean.R). 
+This part of the tutorial will guide you to create a new workflow by extending the one you worked on part II. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part. The function in this file is similar to the previous two we have seen, but with a modification of the method when creating a forecast. See [file](https://github.com/dekkov/neon4cast_faasr/blob/main/create_oxygen_forecast_mean.R). 
 
 
 
 ## Configure the FaaSr JSON workflow
 
-The workflow we are aiming to create will have 2 addition functions compared to the one in previous part. Those are "oxygenForecastMean" and "temperatureForecastMean", which will create forecasts using "Mean" method (instead of "Random walk' as in part II)  on the two variables oxygen and temperature respectively. 
+The workflow we are aiming to create will have two addition functions compared to the one in previous part. Those are "oxygenForecastMean" and "temperatureForecastMean", which will create forecasts using "Mean" method (instead of "Random walk' as in part II)  on the two variables oxygen and temperature respectively. *Friendly reminder:*  the base function `create_oxygen_forecast_mean.R` has been created for you.
 
 ![image](https://github.com/user-attachments/assets/808eb754-3bd1-4d8d-a7bd-9573a701f265)
 
+In part II, our getData function will invoke oxygenForecastRandom walk and temperatureForecastRandomWalk after its execution. We want to add a little complexity to this by having getData invoke two other functions, which are oxygenForecastMean and temperatureForecastMean in this case. However, after executions, they will not invoke a combining function as we have seen previously. 
 
 
 ## Add function to the workflow using JSON Builder App
@@ -237,9 +181,9 @@ Let's first create our function in the workflow:
 2. For "Action Name" and "Function Name", input the following: `oxygenForecastMean` and `create_oxygen_forecast_mean`. Notice: the function name declared here should match the function name initialized in `create_oxygen_forecast_mean.R`.
 3. For "Function Arguments", we need to match this field with the actual arguments in our file, which is `folder=neon4cast, input_file=blinded_aquatic.csv, output_file=oxygen_fc_mean.csv`
 4. Since we won't invoke anything after this function, we can leave "Next Actions to Invoke" blank.
-5. For "Function's Action Container(Optional)", input `ghcr.io/faasr/github-actions-tidyverse:1.4.1`
-6. For "Repository/Path": input `dekkov/neon4cast_faasr`
-7. The dependencies needed for this function should also be declared in the next 2 fields as follows: "Dependencies - Github Package for the function: tidyverts/tsibble, eco4cast/neon4cast", "Dependencies - Repository/Path for the function: neon4cast, tidyverse, tsibble, fable".
+5. For "Repository/Path": input `FaaSr/FaaSr-tutorial/neon4cast_faasr`
+6. For "Dependencies - Github Package for the function": tidyverts/tsibble, eco4cast/neon4cast,
+7. For "Dependencies - Repository/Path for the function": neon4cast, tidyverse, tsibble, fable.
 8. Click Apply
 
 Now that we have our function, we can connect it to our workflow by invoking it after getData function.
@@ -248,16 +192,18 @@ Now that we have our function, we can connect it to our workflow by invoking it 
 2. In "Next Actions to Invoke" section, add `oxygenForecastMean` to the list.
 3. Click apply
 
-You should see an arrow from getData function to oxygenForecastMean, which indicates we have successfully linked the 2 functions.
+You should see an arrow from getData function to oxygenForecastMean, which indicates you have successfully established oxygenForecastMean that is also invoked after GetData completes execution.
+
+
 
 ### temperatureForecastMean
 
 Now, try to follow the instructions below to create your own function and register it.
 
 1. Create a function for forecasting temperature with the new method.
-   a. Create an R script and paste the code from `create_temperature_forecast_rw.R`. Then, replace model(benchmark_rw = RW(temperature)) with `model(benchmark_rw = MEAN(temperature))`.
+   a. Create an R script and paste the code from `create_temperature_forecast_rw.R`. Then, replace model(benchmark_rw = RW(temperature)) with `model(benchmark_mean = MEAN(temperature))`.
    b. Modify variables, function names, and file names.
-   c. Save the file and push it to your repository.
+   c. Save the file and push it to your own repository. **Notice that you will need to create a github repository in order to host this function.**
 2. Register the newly created function in the workflow through FaaSr JSON builder.
    
    a. Head over to the shiny app and select the "Functions" tab.
@@ -268,13 +214,13 @@ Now, try to follow the instructions below to create your own function and regist
       - **Function FaaS Server**: Keep as default for this tutorial.
       - **Function arguments**: The arguments needed for your function.
       - **Next Actions to Invoke**: Since we won't invoke any other function now, keep it blank.
-      - **Repository/Path**: Where your function file is located, which should be "your_github_username/your_repo_name"
-      - **Dependencies-Github Package**: "WONDERING!"
-      - **Dependencies-Repository/Path**: "WONDERING!"
+      - **Repository/Path**: Where your function file is located, which should be "your_github_username/your_repo_name". 
+      - **Dependencies-Github Package**: "tidyverts/tsibble, eco4cast/neon4cast"
+      - **Dependencies-Repository/Path**: "neon4cast, tidyverse, tsibble, fable"
         
    c. Click "Apply" to add the function to the workflow.
    d. In getData's "Next Actions to Invoke", add the action name and click apply to save.
-3. Download the JSON file and use it in your directory.
+3. Now, download the workflow file by clicking on the download button in the top right of the app, and upload it to your Posit cloud environment using upload button under the "Files" tab. Make sure the target directory is the one you are working on and upload the JSON workflow file. 
 4. Enter the following commands to your console (remember to replace "your_workflow_name" with your actual file name):
 
 ```
