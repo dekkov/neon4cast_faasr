@@ -219,9 +219,10 @@ Now, try to follow the instructions below to create your own function and regist
       - **Dependencies-Repository/Path**: "neon4cast, tidyverse, tsibble, fable"
         
    c. Click "Apply" to add the function to the workflow.
+   
    d. In getData's "Next Actions to Invoke", add the action name and click apply to save.
-3. Now, download the workflow file by clicking on the download button in the top right of the app, and upload it to your Posit cloud environment using upload button under the "Files" tab. Make sure the target directory is the one you are working on and upload the JSON workflow file. 
-4. Enter the following commands to your console (remember to replace "your_workflow_name" with your actual file name):
+4. Now, download the workflow file by clicking on the download button in the top right of the app, and upload it to your Posit cloud environment using upload button under the "Files" tab. Make sure the target directory is the one you are working on and upload the JSON workflow file. 
+5. Enter the following commands to your console (remember to replace "your_workflow_name" with your actual file name):
 
 ```
 neon4cast_tutorial<- faasr(json_path="your_workflow_name.json", env="faasr_env")
