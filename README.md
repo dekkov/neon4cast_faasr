@@ -237,14 +237,7 @@ neon4cast_tutorial$invoke_workflow()
 
 ## Check if action is successful
 
-Head over to the github repo `neon4cast_faasr_actions` just created by FaaSr, go to actions page to see if your actions has successfully run. 
-If the runs are successful, you can explore the Console using https://play.min.io:9443. Log in with the following credentials:
-```
-Username: Q3AM3UQ867SPQQA43P2F
-Password: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
-```
-
-Look for the neon4cast folder in faasr bucket, you should be able to see the forecasts you have just created.
+Just like in the previous part, you can browse your faasr bucket in the Console at https://play.min.io:9443 or use mc_ls command to see if the forecasts are created
 
 
 # Part IV: Challenge - Create a Combine Function for the Mean Method
