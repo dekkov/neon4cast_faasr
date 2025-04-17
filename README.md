@@ -39,10 +39,10 @@ In this part, we will learn how to configure the working environment and deploy 
 First let's clone the FaaSr tutorial repo - copy and paste this command in the terminal:
 
 ```
-system('git clone https://github.com/dekkov/neon4cast_faasr.git')
+system('git clone https://github.com/FaaSr/FaaSr-tutorial')
 ```
 
-In RStudio, navigate to the neon4cast_faasr folder, then set it as the working directory (More > Set as Working Directory).
+In RStudio, navigate to the neon4cast_faasr folder inside FaaSr-tutorial, then set it as the working directory (More > Set as Working Directory).
 
 
 
@@ -153,7 +153,7 @@ mc_cat("play/faasr/neon4cast/rw_forecast_combined.csv")
 
 ## Objectives
 
-This part of the tutorial will guide you to create a new workflow by extending the one you worked on part II. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part. The function in this file is similar to the previous two we have seen, but with a modification of the method when creating a forecast. See [file](https://github.com/dekkov/neon4cast_faasr/blob/main/create_oxygen_forecast_mean.R). 
+This part of the tutorial will guide you to create a new workflow by extending the one you worked on part II. We have provided you some guidance and an example file `create_oxygen_forecast_mean.R` to assist you in this part. The function in this file is similar to the previous two we have seen, but with a modification of the method when creating a forecast. See [file](https://github.com/FaaSr/FaaSr-tutorial/neon4cast_faasr/blob/main/create_oxygen_forecast_mean.R). 
 
 
 
